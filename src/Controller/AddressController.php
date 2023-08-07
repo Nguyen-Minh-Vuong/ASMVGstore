@@ -38,6 +38,20 @@ class AddressController extends AbstractController
         $this->security = $security;
     }
 
+    /**
+     * @Route("/address/create", name="address_create")
+     * @IsGranted("ROLE_USER")
+     */
+    public function create(Request $request, CartManager $cartManager, AddressRepository $addressRepository): Response
+    {
+        $user = $this->security->getUser();
+        $address = $addressRepository->findOneBy(['user' => $user]);
+
+        // Nếu không tìm thấy địa chỉ, tạo một đối tượng Address mới
+        if (!$address) {
+            $address = new Address();
+            $address->setUser($user);
+        }
 
         // Tiếp tục xử lý như trước đó
         $addresses = $addressRepository->findAll();
